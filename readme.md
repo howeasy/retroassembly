@@ -100,6 +100,17 @@ Shared ROMs appear in every user's library automatically without uploading. They
 
 Each user can switch their library to **shared library only** mode under _Settings → General → Library mode_, which hides the upload controls and disables uploads. Set `RETROASSEMBLY_RUN_TIME_SHARED_LIBRARY_ONLY="true"` to enforce this for the whole instance.
 
+#### Hosting under a subpath
+
+To serve the app from a subpath (e.g. `https://example.com/retro`), the path must be baked into the asset URLs at build time, so rebuild the image with the `RETROASSEMBLY_RUN_TIME_BASE_URL` build argument and run it with the same value:
+
+```sh
+docker build --build-arg RETROASSEMBLY_RUN_TIME_BASE_URL=/retro -t retroassembly .
+docker run -e RETROASSEMBLY_RUN_TIME_BASE_URL=/retro ...
+```
+
+A reverse proxy can then forward `https://example.com/retro/` to the container. Leave the variable unset to serve from the root.
+
 ## Supported Platforms
 
 RetroAssembly aims to support a wide range of vintage gaming systems. Emulation is powered by [Nostalgist.js](https://nostalgist.js.org/).

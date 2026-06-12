@@ -15,3 +15,8 @@ services:
       # per user under Settings -> General -> Library mode).
       # RETROASSEMBLY_RUN_TIME_SHARED_LIBRARY_ONLY: "true"
     restart: unless-stopped
+
+# To host under a subpath (e.g. https://example.com/retro), rebuild the image with the base URL
+# baked into the assets, then run it with the same value:
+#   docker build --build-arg RETROASSEMBLY_RUN_TIME_BASE_URL=/retro -t retroassembly-retro .
+#   (and set environment: RETROASSEMBLY_RUN_TIME_BASE_URL: /retro)

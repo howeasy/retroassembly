@@ -8,13 +8,21 @@ const composeYaml = `services:
   retroassembly:
     image: arianrhodsandlot/retroassembly
     ports: [8000:8000]
-    volumes: [./data:/app/data]
+    volumes:
+      - ./data:/app/data
+      - ./roms:/app/roms:ro
+    environment:
+      RETROASSEMBLY_RUN_TIME_SHARED_ROM_DIRECTORY: /app/roms
+      RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY: "true"
     restart: unless-stopped`
 
 const dockerCommand = String.raw`docker run -d \
   --name retroassembly \
   -p 8000:8000 \
   -v /path/to/your/data:/app/data \
+  -v /path/to/your/roms:/app/roms:ro \
+  -e RETROASSEMBLY_RUN_TIME_SHARED_ROM_DIRECTORY=/app/roms \
+  -e RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY=true \
   arianrhodsandlot/retroassembly`
 
 export function DockerDialog({ onOpenChange, ...props }: Readonly<Dialog.RootProps>) {

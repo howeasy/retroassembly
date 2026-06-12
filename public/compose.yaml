@@ -2,5 +2,16 @@ services:
   retroassembly:
     image: arianrhodsandlot/retroassembly
     ports: [8000:8000]
-    volumes: [./data:/app/data]
+    volumes:
+      - ./data:/app/data
+      - ./roms:/app/roms:ro
+    environment:
+      RETROASSEMBLY_RUN_TIME_SHARED_ROM_DIRECTORY: /app/roms
+      RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY: "true"
+      # Re-scan the shared library this often (seconds) to pick up host changes without a restart.
+      # Set to "0" to disable the periodic re-scan entirely (the library is still scanned at startup).
+      RETROASSEMBLY_RUN_TIME_SHARED_ROM_SCAN_INTERVAL: "300"
+      # Set "true" to disable uploads entirely and serve only the shared library (also toggleable
+      # per user under Settings -> General -> Library mode).
+      # RETROASSEMBLY_RUN_TIME_SHARED_LIBRARY_ONLY: "true"
     restart: unless-stopped

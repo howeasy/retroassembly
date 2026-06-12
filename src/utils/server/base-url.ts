@@ -19,7 +19,8 @@ import { getRunTimeEnv, normalizeBaseUrl } from '#@/constants/env.ts'
  *     browser-facing URL (auth/login/logout/OAuth redirects) wraps it with {@link withBase}.
  *
  *  3. Raw (non-router) browser navigations use the client-side `withClientBase`, which reads the base
- *     from a `globalThis.__RA_BASE_URL` global set on the server at startup and streamed to the page.
+ *     from a `<meta name="ra-base-url">` tag (CSP-safe) on the client and from a startup-set global on
+ *     the server.
  *
  * Future maintainers: routes stay root-relative; reach for `withBase` only when producing a URL the
  * browser will navigate to, and `stripBase` when matching an incoming request path against an

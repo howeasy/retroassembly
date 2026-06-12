@@ -2,6 +2,7 @@ import { noop } from 'es-toolkit'
 import { createElement, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Links, Meta, useLoaderData } from 'react-router'
+import { normalizeBaseUrl } from '#@/constants/env.ts'
 import { metadata } from '#@/constants/metadata.ts'
 import type { loader } from '#@/pages/root.tsx'
 import { withClientBase } from '#@/utils/client/base-url.ts'
@@ -9,7 +10,10 @@ import { cdnHost, libretroThumbnailsHost } from '#@/utils/isomorphic/cdn.ts'
 
 export function Head() {
   const { t } = useTranslation()
-  const { headElements } = useLoaderData<typeof loader>() || {}
+  const { env, headElements } = useLoaderData<typeof loader>() || {}
+  // Make the runtime base path available to raw (non-router) browser navigations before any app JS
+  // runs (see utils/client/base-url.ts). Inline scripts execute synchronously during HTML parse.
+  const baseUrl = normalizeBaseUrl(env?.RETROASSEMBLY_RUN_TIME_BASE_URL)
   const target = useSyncExternalStore(
     () => noop,
     () => (globalThis.self === globalThis.top ? '_self' : '_blank'),
@@ -18,6 +22,8 @@ export function Head() {
 
   return (
     <head>
+      {/* eslint-disable-next-line react/no-danger */}
+      <script dangerouslySetInnerHTML={{ __html: `window.RETROASSEMBLY_BASE_URL=${JSON.stringify(baseUrl)}` }} />
       <meta charSet='utf-8' />
       <meta content='width=device-width,initial-scale=1,viewport-fit=cover,shrink-to-fit=yes' name='viewport' />
       <meta content={metadata.themeColor} name='theme-color' />

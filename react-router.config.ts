@@ -2,14 +2,13 @@ import path from 'node:path'
 import type { Config } from '@react-router/dev/config'
 import fs from 'fs-extra'
 import { build } from 'tsdown'
-import { normalizeBaseUrl } from './src/constants/env.ts'
 import { getTargetRuntime } from './scripts/utils.ts'
 
 export default {
   appDirectory: 'src/pages',
-  // Router basename for subpath hosting (e.g. /retro). Read from the same env as Vite's base so the
-  // client and server router strip the prefix; see utils/server/base-url.ts for the full picture.
-  basename: normalizeBaseUrl(process.env.RETROASSEMBLY_RUN_TIME_BASE_URL) || '/',
+  // Built with a root basename; subpath hosting (e.g. /retro) is applied at runtime by patching the
+  // server build's basename from RETROASSEMBLY_RUN_TIME_BASE_URL. See utils/server/runtime-base-build.ts.
+  basename: '/',
   buildDirectory: 'dist',
   async buildEnd() {
     if (getTargetRuntime() === 'node') {

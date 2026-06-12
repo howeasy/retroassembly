@@ -13,7 +13,7 @@ import { RouterContextProvider } from 'react-router'
 import devtoolsJson from 'vite-plugin-devtools-json'
 import { defineConfig, type Plugin, type UserConfig } from 'vite-plus'
 import { getTargetRuntime, logServerInfo, prepareWranglerConfig } from './scripts/utils.ts'
-import { getDirectories, normalizeBaseUrl } from './src/constants/env.ts'
+import { getDirectories } from './src/constants/env.ts'
 
 defaults(process.env, {
   RETROASSEMBLY_BUILD_TIME_VITE_BUILD_TIME: DateTime.now().setZone('utc').toISO(),
@@ -65,12 +65,12 @@ function serverInfo() {
 const viteConfigForReactRouter = defineConfig(async (env) => {
   const envPort = process.env.RETROASSEMBLY_RUN_TIME_PORT || process.env.PORT
   const port = envPort ? Number.parseInt(envPort, 10) || 8000 : 8000
-  // Base path for subpath hosting (e.g. /retro). Vite bakes this into asset URLs and React Router
-  // derives its router basename from it. Read at build time; the server reads the same env at runtime.
-  const baseUrl = normalizeBaseUrl(process.env.RETROASSEMBLY_RUN_TIME_BASE_URL)
+  // The build is intentionally base-agnostic: assets are emitted with root-relative URLs (`/assets/...`).
+  // Subpath hosting (e.g. /retro) is applied entirely at runtime from RETROASSEMBLY_RUN_TIME_BASE_URL —
+  // the server prefixes the asset manifest and router basename per process. See utils/server/runtime-base-build.ts.
   const plugins = [tailwindcss({ optimize: false }), reactRouter(), [devtoolsJson()], serverInfo()]
   const config: UserConfig = {
-    base: baseUrl ? `${baseUrl}/` : '/',
+    base: '/',
     build: { chunkSizeWarningLimit: 1024 },
     clearScreen: false,
     envPrefix: 'RETROASSEMBLY_BUILD_TIME_VITE_',

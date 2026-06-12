@@ -104,10 +104,9 @@ Each user can switch their library to **shared library only** mode under _Settin
 
 #### Hosting under a subpath
 
-To serve the app from a subpath (e.g. `https://example.com/retro`), the path must be baked into the asset URLs at build time, so rebuild the image with the `RETROASSEMBLY_RUN_TIME_BASE_URL` build argument and run it with the same value:
+To serve the app from a subpath (e.g. `https://example.com/retro`), set the `RETROASSEMBLY_RUN_TIME_BASE_URL` environment variable at run time — no rebuild is needed. The same image works at the root or any subpath:
 
 ```sh
-docker build --build-arg RETROASSEMBLY_RUN_TIME_BASE_URL=/retro -t retroassembly .
 docker run -e RETROASSEMBLY_RUN_TIME_BASE_URL=/retro ...
 ```
 

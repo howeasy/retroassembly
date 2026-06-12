@@ -6,7 +6,7 @@ import isDocker from 'is-docker'
 import { getDirectories, getRunTimeEnv } from '../../../constants/env.ts'
 import { createDrizzle } from '../drizzle.ts'
 import { isSharedLibraryEnabled } from '../shared-rom.ts'
-import { enrichSharedRomsMetadata, scanSharedRoms } from './scan-shared-roms.ts'
+import { enrichSharedRomsMetadata, scanSharedRoms, sharedRomDirectoryHasPlatform } from './scan-shared-roms.ts'
 
 async function testDataDirectory() {
   const { dataDirectory } = getDirectories()
@@ -89,6 +89,21 @@ function startSharedRomAutoRefresh() {
   timer.unref?.()
 }
 
+/**
+ * When RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY is not explicitly set to "true"/"false",
+ * enable the shared library automatically if the mounted directory contains recognized platform
+ * folders. This makes the common Docker setup need nothing more than a /app/roms mount. The value is
+ * written to process.env before any request runs, so the rest of the app reads a single resolved flag.
+ */
+async function autoEnableSharedLibrary() {
+  const explicit = process.env.RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY
+  if (explicit === 'true' || explicit === 'false') {
+    return
+  }
+  const [, hasPlatform] = await attemptAsync(sharedRomDirectoryHasPlatform)
+  process.env.RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY = hasPlatform ? 'true' : 'false'
+}
+
 async function main() {
   if (getRuntimeKey() !== 'node') {
     return
@@ -96,6 +111,7 @@ async function main() {
 
   await testDataDirectory()
   migrateDatabase()
+  await autoEnableSharedLibrary()
   await indexSharedRoms()
 }
 

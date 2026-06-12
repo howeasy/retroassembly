@@ -73,14 +73,16 @@ See [RetroAssembly's homepage on Docker Hub](https://hub.docker.com/r/arianrhods
 
 When self-hosting, you can expose a shared, read-only ROM library to every user of your instance without anyone having to upload files.
 
-Mount your ROM directory into the container at `/app/roms` (read-only) and set the following environment variables:
+Just mount your ROM directory into the container at `/app/roms` (read-only) — **no environment variables are required**. The shared library is auto-detected and enabled whenever that directory contains recognized platform folders.
 
-| Environment Variable                               | Description                                                                                   |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `RETROASSEMBLY_RUN_TIME_SHARED_ROM_DIRECTORY`      | Path to the mounted shared ROM directory, e.g. `/app/roms`.                                    |
-| `RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY` | Set to `"true"` to enable the shared ROM library.                                             |
-| `RETROASSEMBLY_RUN_TIME_SHARED_ROM_SCAN_INTERVAL`  | Seconds between automatic re-scans of the shared directory (default `300`; `0` disables).      |
-| `RETROASSEMBLY_RUN_TIME_SHARED_LIBRARY_ONLY`       | Set to `"true"` to disable uploads entirely and serve only the shared library, for all users. |
+The following variables are all optional overrides:
+
+| Environment Variable                               | Description                                                                                          |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `RETROASSEMBLY_RUN_TIME_ENABLE_SHARED_ROM_LIBRARY` | Force the shared library on/off (`"true"`/`"false"`). Default: auto-detect from the mounted folder.  |
+| `RETROASSEMBLY_RUN_TIME_SHARED_ROM_DIRECTORY`      | Use a different mount path. Default: `/app/roms`.                                                     |
+| `RETROASSEMBLY_RUN_TIME_SHARED_ROM_SCAN_INTERVAL`  | Seconds between automatic re-scans of the directory (default `300`; `0` disables the periodic scan).  |
+| `RETROASSEMBLY_RUN_TIME_SHARED_LIBRARY_ONLY`       | Set to `"true"` to disable uploads entirely and serve only the shared library, for all users.        |
 
 Inside the mounted directory, group ROMs into subfolders named after RetroAssembly's `PlatformName` keys, matched case-insensitively (e.g. `nes` or `NES`, `snes` or `SNES`, `gba`, `gbc`, `genesis`, `megadrive`, `sfc`, `arcade`...):
 

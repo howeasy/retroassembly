@@ -94,6 +94,11 @@ describe('scanSharedRoms integration', () => {
     assert.equal(rows.length, 3)
   })
 
+  test('sharedRomDirectoryHasPlatform detects recognized platform folders', async () => {
+    const { sharedRomDirectoryHasPlatform } = await import('./scan-shared-roms.ts')
+    assert.equal(await sharedRomDirectoryHasPlatform(), true)
+  })
+
   test('is idempotent: a second scan does not create duplicates', async () => {
     const before = await getSharedRows()
     await scanSharedRoms()

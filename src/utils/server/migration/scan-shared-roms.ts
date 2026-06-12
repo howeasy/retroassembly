@@ -69,6 +69,16 @@ async function listPlatformFiles(platformDirectory: string) {
   return relativePaths
 }
 
+/** True when the shared ROM directory exists and contains at least one recognized platform folder. */
+export async function sharedRomDirectoryHasPlatform() {
+  const { sharedRomDirectory } = getDirectories()
+  if (!sharedRomDirectory || !(await fs.pathExists(sharedRomDirectory))) {
+    return false
+  }
+  const [, entries] = await attemptAsync(() => fs.readdir(sharedRomDirectory, { withFileTypes: true }))
+  return Boolean(entries?.some((entry) => entry.isDirectory() && Object.hasOwn(platformMap, entry.name.toLowerCase())))
+}
+
 async function discoverSharedRoms(sharedRomDirectory: string) {
   const discovered = new Map<string, DiscoveredRom>()
 
